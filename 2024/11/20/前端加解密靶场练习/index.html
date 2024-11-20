@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="https:&#x2F;&#x2F;github.com&#x2F;SwagXz&#x2F;encrypt-labs 练习平台 https:&#x2F;&#x2F;deobfuscate.io&#x2F; js 反混淆 看到有师傅搭建了个前端加密练习平台，就对其前端加解密进行学习 AES 固定 key抓包搜索关键字encryptedData定位加密函数   得到 key 和 iv 为1234567890123456，算法为 aes cbc pkcs7     远程调">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端加解密靶场练习">
+<meta property="og:url" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/index.html">
+<meta property="og:site_name" content="N0poInt&#39;s Blog">
+<meta property="og:description" content="https:&#x2F;&#x2F;github.com&#x2F;SwagXz&#x2F;encrypt-labs 练习平台 https:&#x2F;&#x2F;deobfuscate.io&#x2F; js 反混淆 看到有师傅搭建了个前端加密练习平台，就对其前端加解密进行学习 AES 固定 key抓包搜索关键字encryptedData定位加密函数   得到 key 和 iv 为1234567890123456，算法为 aes cbc pkcs7     远程调">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114115629.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114124356.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114131831.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114147268.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114158874.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114230259.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114239611.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114247239.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114300660.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114308072.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114315673.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114322865.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114331270.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114342347.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114353769.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114404809.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114415205.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114423766.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114436246.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114442241.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114448438.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114500102.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114506326.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114512332.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114539911.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114528610.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114619237.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114627853.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114634769.png">
+<meta property="og:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114641010.png">
+<meta property="article:published_time" content="2024-11-20T03:33:17.000Z">
+<meta property="article:modified_time" content="2024-11-20T03:50:18.413Z">
+<meta property="article:author" content="N0poInt">
+<meta property="article:tag" content="加解密">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114115629.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>前端加解密靶场练习</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2024/09/26/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%A6%BE%E5%8C%A0%E5%95%86%E5%9F%8Eyii%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%93%BE%E6%8C%96%E6%8E%98/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/&text=前端加解密靶场练习"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/&title=前端加解密靶场练习"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/&is_video=false&description=前端加解密靶场练习"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=前端加解密靶场练习&body=Check out this article: http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/&title=前端加解密靶场练习"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/&title=前端加解密靶场练习"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/&title=前端加解密靶场练习"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/&title=前端加解密靶场练习"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/&name=前端加解密靶场练习&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/&t=前端加解密靶场练习"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#AES-%E5%9B%BA%E5%AE%9A-key"><span class="toc-number">1.</span> <span class="toc-text">AES 固定 key</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E8%B0%83%E7%94%A8-rpc-%E6%B5%8F%E8%A7%88%E5%99%A8%E6%96%B9%E6%B3%95"><span class="toc-number">1.1.</span> <span class="toc-text">远程调用(rpc)浏览器方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Burp%E6%8F%92%E4%BB%B6"><span class="toc-number">1.2.</span> <span class="toc-text">Burp插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E5%8A%A0%E8%A7%A3%E5%AF%86%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.3.</span> <span class="toc-text">接口加解密代码实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AES%E6%9C%8D%E5%8A%A1%E7%AB%AF%E8%8E%B7%E5%8F%96Key"><span class="toc-number">2.</span> <span class="toc-text">AES服务端获取Key</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E5%8A%A0%E8%A7%A3%E5%AF%86%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.1.</span> <span class="toc-text">接口加解密实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RSA-%E5%8A%A0%E5%AF%86"><span class="toc-number">3.</span> <span class="toc-text">RSA 加密</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E5%8A%A0%E5%AF%86%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.1.</span> <span class="toc-text">接口加密实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AES-Rsa-%E5%8A%A0%E5%AF%86"><span class="toc-number">4.</span> <span class="toc-text">AES+Rsa 加密</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E5%8A%A0%E5%AF%86%E5%AE%9E%E7%8E%B0-1"><span class="toc-number">4.1.</span> <span class="toc-text">接口加密实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DES-%E5%8A%A0%E5%AF%86"><span class="toc-number">5.</span> <span class="toc-text">DES 加密</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E5%8A%A0%E5%AF%86%E5%AE%9E%E7%8E%B0-2"><span class="toc-number">5.1.</span> <span class="toc-text">接口加密实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%98%8E%E6%96%87%E5%8A%A0%E7%AD%BE"><span class="toc-number">6.</span> <span class="toc-text">明文加签</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E5%8A%A0%E5%AF%86%E5%AE%9E%E7%8E%B0-3"><span class="toc-number">6.1.</span> <span class="toc-text">接口加密实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A0%E7%AD%BE-key-%E5%9C%A8%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="toc-number">7.</span> <span class="toc-text">加签 key 在服务端</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E5%8A%A0%E5%AF%86%E5%AE%9E%E7%8E%B0-4"><span class="toc-number">7.1.</span> <span class="toc-text">接口加密实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A6%81%E6%AD%A2%E9%87%8D%E6%94%BE"><span class="toc-number">8.</span> <span class="toc-text">禁止重放</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E5%8A%A0%E5%AF%86%E5%AE%9E%E7%8E%B0-5"><span class="toc-number">8.1.</span> <span class="toc-text">接口加密实现</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        前端加解密靶场练习
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">N0poInt</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-11-20T03:33:17.000Z" class="dt-published" itemprop="datePublished">2024-11-20</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/%E5%8A%A0%E8%A7%A3%E5%AF%86/" rel="tag">加解密</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p><a target="_blank" rel="noopener" href="https://github.com/SwagXz/encrypt-labs">https://github.com/SwagXz/encrypt-labs</a> 练习平台</p>
+<p><a target="_blank" rel="noopener" href="https://deobfuscate.io/">https://deobfuscate.io/</a> js 反混淆</p>
+<p>看到有师傅搭建了个前端加密练习平台，就对其前端加解密进行学习</p>
+<h2 id="AES-固定-key"><a href="#AES-固定-key" class="headerlink" title="AES 固定 key"></a>AES 固定 key</h2><p>抓包搜索关键字encryptedData定位加密函数</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114115629.png" class="">
+
+<p>得到 key 和 iv 为1234567890123456，算法为 aes cbc pkcs7</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114124356.png" class="">
+
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114131831.png" class="">
+
+<h3 id="远程调用-rpc-浏览器方法"><a href="#远程调用-rpc-浏览器方法" class="headerlink" title="远程调用(rpc)浏览器方法"></a>远程调用(rpc)浏览器方法</h3><p><a target="_blank" rel="noopener" href="https://github.com/jxhczhl/JsRpc">https://github.com/jxhczhl/JsRpc</a></p>
+<p>1， 先打开客户端，然后打开控制台，将JSrpc的注入代码输入</p>
+<p>2， 然后再输入var demo &#x3D; new Hlclient(“ws:&#x2F;&#x2F;127.0.0.1:12080&#x2F;ws?group&#x3D;zzz”);</p>
+<p>3，记录加密函数 在控制台中输入window.enc &#x3D; sendDataAes， 控制台会显示当前函数信息, 并保存非形参的参数, 注册成功后我们可以主动调用<code>enc()</code>函数, 查看是否有效</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114147268.png" class="">
+
+<p>4，向JsRPC中注册这些函数，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">demo.regAction(&quot;sendDataAes&quot;, function (resolve, param) &#123;</span><br><span class="line">    document.getElementById(&quot;username&quot;).value = param[&quot;username&quot;];</span><br><span class="line">    document.getElementById(&quot;password&quot;).value = param[&quot;password&quot;];</span><br><span class="line">    var res = enc(String(param[&quot;url&quot;]));</span><br><span class="line">    resolve(res);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>5，测试调用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">import json</span><br><span class="line"></span><br><span class="line">import requests</span><br><span class="line"></span><br><span class="line">url = &quot;http://127.0.0.1:12080/go&quot;</span><br><span class="line">data = &#123;</span><br><span class="line">    &quot;group&quot;: &quot;zzz&quot;,</span><br><span class="line">    &quot;action&quot;: &quot;sendDataAes&quot;,</span><br><span class="line">    &quot;param&quot;: json.dumps(&#123;&quot;username&quot;:&quot;admin&quot;,&quot;password&quot;:&quot;123123&quot;,&quot;url&quot;:&quot;encrypt/aes.php&quot;&#125;)</span><br><span class="line">&#125;</span><br><span class="line">print(data[&quot;param&quot;])</span><br><span class="line">res=requests.post(url, data=data) </span><br><span class="line">print(res.text)</span><br></pre></td></tr></table></figure>
+
+<p>发现这样的话如果爆破密码，浏览器会弹窗导致 js 阻塞，中断发包</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114158874.png" class="">
+
+<p>可以通过重写 <code>window.alert</code> 方法，阻止弹框的弹出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">window.alert = function() &#123;</span><br><span class="line">  console.log(&quot;原始 alert 被阻止&quot;);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>后面可以修改 python 代码进行爆破密码</p>
+<p>如果目标实现的加密函数只实现了加密数据功能，可以参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/Dreambooks/article/details/141557717">https://blog.csdn.net/Dreambooks/article/details/141557717</a>文章中的 python 代码进行爆破</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">import json</span><br><span class="line">from urllib.parse import quote</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def encrypt(data):</span><br><span class="line">    param = quote(data)</span><br><span class="line">    req = requests.get(f&quot;http://127.0.0.1:12080/go?group=encrypt&amp;action=ens&amp;param=&#123;param&#125;&quot;)</span><br><span class="line">    return req.text</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def decrypt(data):</span><br><span class="line">    res = requests.get(f&quot;http://127.0.0.1:12080/go?group=encrypt&amp;action=decry&amp;param=&#123;data&#125;&quot;)</span><br><span class="line">    return json.loads(res.text)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &#x27;__main__&#x27;:</span><br><span class="line">    for i in range(123450,123460):</span><br><span class="line">        passwd = str(i)</span><br><span class="line">        data = &#x27;&#123;&quot;username&quot;:&quot;admin&quot;,&quot;password&quot;:&quot;%s&quot;,&quot;validCode&quot;:&quot;xiaj&quot;&#125;&#x27; % passwd</span><br><span class="line">        print(&quot;=====================请求明文数据=====================&quot;)</span><br><span class="line">        print(data)</span><br><span class="line">        json_data = json.loads(encrypt(data))[&#x27;data&#x27;]</span><br><span class="line">        encrypt_text = json.loads(json_data)</span><br><span class="line">        print(&quot;=====================请求密文数据=====================&quot;)</span><br><span class="line">        print(encrypt_text)</span><br><span class="line">        requestId = encrypt_text[&#x27;id&#x27;]</span><br><span class="line">        sign = encrypt_text[&#x27;sign&#x27;]</span><br><span class="line">        data_en = encrypt_text[&#x27;encrypt_text&#x27;]</span><br><span class="line">        timestamp = encrypt_text[&#x27;timestamp&#x27;]</span><br><span class="line">        url = &quot;http://xxxx/api/user/login&quot;</span><br><span class="line">        headers = &#123;&quot;Pragma&quot;: &quot;no-cache&quot;, &quot;Cache-Control&quot;: &quot;no-cache&quot;,</span><br><span class="line">                   &quot;Accept&quot;: &quot;application/json, text/plain, */*&quot;, &quot;timestamp&quot;: str(timestamp),</span><br><span class="line">                   &quot;X-Requested-With&quot;: &quot;XMLHttpRequest&quot;, &quot;requestId&quot;: requestId,</span><br><span class="line">                   &quot;User-Agent&quot;: &quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36&quot;,</span><br><span class="line">                   &quot;sign&quot;: sign, &quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;,</span><br><span class="line">                   &quot;Accept-Encoding&quot;: &quot;gzip, deflate, br&quot;, &quot;Accept-Language&quot;: &quot;zh-CN,zh;q=0.9&quot;,</span><br><span class="line">                   &quot;Connection&quot;: &quot;close&quot;&#125;</span><br><span class="line">        datas = quote(data_en)</span><br><span class="line">        req = requests.post(url, headers=headers, data=data_en).text</span><br><span class="line">        print(&quot;=====================响应密文数据=====================&quot;)</span><br><span class="line">        print(req)</span><br><span class="line">        res_data = decrypt(quote(req))</span><br><span class="line">        print(&quot;=====================响应明文数据=====================&quot;)</span><br><span class="line">        print(res_data[&#x27;data&#x27;])</span><br><span class="line">        code = json.loads(res_data[&#x27;data&#x27;])</span><br><span class="line">        if code[&#x27;code&#x27;] == &#x27;0&#x27;:</span><br><span class="line">            print(&quot;=====================账户爆破成功=====================&quot;)</span><br><span class="line">            break</span><br></pre></td></tr></table></figure>
+
+<p>如果需要再 bp 中发包明文数据，进行爆破可以参考</p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/12897">https://xz.aliyun.com/t/12897</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/_WdQlH6AKma8zYq73Ub7ag">https://mp.weixin.qq.com/s/_WdQlH6AKma8zYq73Ub7ag</a></p>
+<p>使用mitmproxy 代理进行参数加密</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">import urllib.parse</span><br><span class="line">import re</span><br><span class="line">import json</span><br><span class="line">from mitmproxy import ctx</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def encrypt(data):</span><br><span class="line">    data = data.replace(&#x27;&amp;&#x27;, &quot;%26&quot;)</span><br><span class="line">    url = &quot;http://127.0.0.1:5612/business-demo/invoke?group=MN&amp;action=AES&amp;text=&#123;&#125;&quot;.format(</span><br><span class="line">        data)</span><br><span class="line">    res = requests.get(url)</span><br><span class="line">    res = json.loads(res.text)</span><br><span class="line">    return res[&#x27;data&#x27;]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def request(flow):</span><br><span class="line">    # 获取GET请求的数据</span><br><span class="line">    data = flow.request.query.get(&#x27;data&#x27;)</span><br><span class="line">    print(&#x27;Get request data ===&gt; &#x27;, data)</span><br><span class="line">    encryptData = encrypt(data)</span><br><span class="line">    print(&#x27;EncryptData ===&gt; &#x27;, encryptData)</span><br><span class="line">    # 设置修改后的请求 body 数据</span><br><span class="line">    flow.request.query[&#x27;data&#x27;] = encryptData</span><br><span class="line">    # url = flow.request.url + &quot;?data=&quot; + encryptData</span><br><span class="line">    # res = requests.get(url)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 请求后的数据</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def response(flow):</span><br><span class="line">    response = flow.response</span><br><span class="line">    print(response.text)</span><br><span class="line">    ctx.log.info(str(response.status_code))</span><br></pre></td></tr></table></figure>
+
+<p>然后启动<br>mitmweb -v -s test.py -p 8081</p>
+<p>将代码运行起来后, burpsuite 的upstream 设为 mitm的监听端口<br>然后尝试发送一个包<br>可以看见BP中明文发送 已经被加密</p>
+<h3 id="Burp插件"><a href="#Burp插件" class="headerlink" title="Burp插件"></a>Burp插件</h3><p><a target="_blank" rel="noopener" href="https://github.com/f0ng/autoDecoder">https://github.com/f0ng/autoDecoder</a></p>
+<p>这里使用自带算法加解密</p>
+<p>选择 aes cbc 算法，填写 key 和 iv，设置为请求包加解密方式</p>
+<p>然后填写正则表达式为encryptedData&#x3D;(.*)提取出要解密的内容</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114230259.png" class="">
+
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114239611.png" class="">
+
+<p>然后把请求包的密文转换为明文</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114247239.png" class="">
+
+<p>就可以直接修改明文了</p>
+<h3 id="接口加解密代码实现"><a href="#接口加解密代码实现" class="headerlink" title="接口加解密代码实现"></a>接口加解密代码实现</h3><p>尝试用上面插件 通过实现 api 接口对请求包进行加密和解密</p>
+<p>现在 iv 和 key 都是1234567890123456 并且知道算法是 aes cbc 加密模式，下面是实现代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding:utf-8 -*-</span><br><span class="line">from flask import Flask,request</span><br><span class="line">from Cryptodome.Cipher import AES #pip install pycryptodomex</span><br><span class="line">from Cryptodome.Util import Padding</span><br><span class="line">from urllib.parse import unquote,quote</span><br><span class="line">import re</span><br><span class="line">import base64</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line">def aes_encrypt(s):</span><br><span class="line">    secret_key = b&quot;1234567890123456&quot;</span><br><span class="line">    iv = b&quot;1234567890123456&quot;</span><br><span class="line">    k = AES.new(secret_key,AES.MODE_CBC,iv)</span><br><span class="line">    padded_s = Padding.pad(s.encode(&quot;UTF-8&quot;),AES.block_size,&quot;pkcs7&quot;)</span><br><span class="line">    en = k.encrypt(padded_s)</span><br><span class="line">    return quote(base64.encodebytes(en).decode().strip(&quot;\n&quot;))</span><br><span class="line"></span><br><span class="line">def aes_decrypt(s):</span><br><span class="line">    secret_key = b&quot;1234567890123456&quot;</span><br><span class="line">    iv = b&quot;1234567890123456&quot;</span><br><span class="line">    k = AES.new(secret_key,AES.MODE_CBC,iv) #创建 AES 解密器</span><br><span class="line">    encrypted_data = base64.b64decode(s)  #BASE64解码</span><br><span class="line">    # 解密并去除填充</span><br><span class="line">    de = k.decrypt(encrypted_data)</span><br><span class="line">    return Padding.unpad(de, AES.block_size, style=&quot;pkcs7&quot;).decode()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@app.route(&#x27;/encode&#x27;,methods=[&quot;POST&quot;])</span><br><span class="line">def encrypt():</span><br><span class="line">    param = request.form.get(&#x27;dataBody&#x27;)  # 获取body</span><br><span class="line">    encry_param = aes_encrypt(param.strip(&quot;\n&quot;))</span><br><span class="line">    print(param)</span><br><span class="line">    print(encry_param)</span><br><span class="line">    return &quot;encryptedData=&quot;+encry_param</span><br><span class="line"></span><br><span class="line">@app.route(&#x27;/decode&#x27;,methods=[&quot;POST&quot;])</span><br><span class="line">def decrypt():</span><br><span class="line">    param = request.form.get(&#x27;dataBody&#x27;)  # 获取body</span><br><span class="line">    match = re.search(r&#x27;encryptedData=(.*)&#x27;,param.strip(&quot;\n&quot;)) # 正则提取密文</span><br><span class="line">    decrypt_param = aes_decrypt(unquote(match.group(1))) # url解码然后传给解密函数</span><br><span class="line">    print(param)</span><br><span class="line">    print(decrypt_param)</span><br><span class="line">    return decrypt_param</span><br><span class="line"></span><br><span class="line">if __name__ == &#x27;__main__&#x27;:</span><br><span class="line">    app.debug = True # 设置调试模式，生产模式的时候要关掉debug</span><br><span class="line">    app.run(host=&quot;0.0.0.0&quot;,port=&quot;8888&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>设置如下 ，就可以直接修改明文进行发包了</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114300660.png" class="">
+
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114308072.png" class="">
+
+<h2 id="AES服务端获取Key"><a href="#AES服务端获取Key" class="headerlink" title="AES服务端获取Key"></a>AES服务端获取Key</h2><img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114315673.png" class="">
+
+<p>直接填写 key 和 iv 就行，并设置为 base64</p>
+<p>然后修改正则encryptedData”:”(.*)”}</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114322865.png" class="">
+
+<h3 id="接口加解密实现"><a href="#接口加解密实现" class="headerlink" title="接口加解密实现"></a>接口加解密实现</h3><p>这里 获取的 key 和 iv 是随机生成然后存放在 session 中的，不会更变</p>
+<p>和上面区别就是需要对 key 和 iv 进行 base64 解码</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114331270.png" class="">
+
+<p>代码如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding:utf-8 -*-</span><br><span class="line">from flask import Flask,request</span><br><span class="line">from Cryptodome.Cipher import AES #pip install pycryptodomex</span><br><span class="line">from Cryptodome.Util import Padding</span><br><span class="line">from urllib.parse import unquote,quote</span><br><span class="line">import re</span><br><span class="line">import base64</span><br><span class="line">import json</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line">def aes_encrypt(s):</span><br><span class="line">    secret_key = &quot;tNsXedbbDjxfaF2gA5iF3Q==&quot;</span><br><span class="line">    iv = &quot;+xyEomsNd7JazQW6ezTMIg==&quot;</span><br><span class="line">    k = AES.new(base64.b64decode(secret_key),AES.MODE_CBC,base64.b64decode(iv))</span><br><span class="line">    padded_s = Padding.pad(s.encode(&quot;UTF-8&quot;),AES.block_size,&quot;pkcs7&quot;)</span><br><span class="line">    en = k.encrypt(padded_s)</span><br><span class="line">    return base64.encodebytes(en).decode().strip(&quot;\n&quot;)</span><br><span class="line"></span><br><span class="line">def aes_decrypt(s):</span><br><span class="line">    secret_key = &quot;tNsXedbbDjxfaF2gA5iF3Q==&quot;</span><br><span class="line">    iv = &quot;+xyEomsNd7JazQW6ezTMIg==&quot;</span><br><span class="line">    k = AES.new(base64.b64decode(secret_key),AES.MODE_CBC,base64.b64decode(iv)) #创建 AES 解密器</span><br><span class="line">    encrypted_data = base64.b64decode(s)  #BASE64解码</span><br><span class="line">    # 解密并去除填充</span><br><span class="line">    de = k.decrypt(encrypted_data)</span><br><span class="line">    return Padding.unpad(de, AES.block_size, style=&quot;pkcs7&quot;).decode()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@app.route(&#x27;/encode&#x27;,methods=[&quot;POST&quot;])</span><br><span class="line">def encrypt():</span><br><span class="line">    param = request.form.get(&#x27;dataBody&#x27;)  # 获取body</span><br><span class="line">    encry_param = aes_encrypt(param.strip(&quot;\n&quot;))</span><br><span class="line">    print(param)</span><br><span class="line">    print(encry_param)</span><br><span class="line">    response = &#123;&quot;encryptedData&quot;:encry_param&#125;</span><br><span class="line">    return json.dumps(response)</span><br><span class="line"></span><br><span class="line">@app.route(&#x27;/decode&#x27;,methods=[&quot;POST&quot;])</span><br><span class="line">def decrypt():</span><br><span class="line">    param = request.form.get(&#x27;dataBody&#x27;)  # 获取body</span><br><span class="line">    encryptedData = json.loads(param)[&#x27;encryptedData&#x27;]</span><br><span class="line">    decrypt_param = aes_decrypt(encryptedData) # 调用解密函数</span><br><span class="line">    print(param)</span><br><span class="line">    print(decrypt_param)</span><br><span class="line">    return decrypt_param</span><br><span class="line"></span><br><span class="line">if __name__ == &#x27;__main__&#x27;:</span><br><span class="line">    app.debug = True # 设置调试模式，生产模式的时候要关掉debug</span><br><span class="line">    app.run(host=&quot;0.0.0.0&quot;,port=&quot;8888&quot;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="RSA-加密"><a href="#RSA-加密" class="headerlink" title="RSA 加密"></a>RSA 加密</h2><p>定位加密函数</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114342347.png" class="">
+
+<p>获取公钥</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-----BEGIN PUBLIC KEY-----</span><br><span class="line">MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDRvA7giwinEkaTYllDYCkzujvi</span><br><span class="line">NH+up0XAKXQot8RixKGpB7nr8AdidEvuo+wVCxZwDK3hlcRGrrqt0Gxqwc11btlM</span><br><span class="line">DSj92Mr3xSaJcshZU8kfj325L8DRh9jpruphHBfh955ihvbednGAvOHOrz3Qy3Cb</span><br><span class="line">ocDbsNeCwNpRxwjIdQIDAQAB</span><br><span class="line">-----END PUBLIC KEY-----</span><br></pre></td></tr></table></figure>
+
+<p>这里只能获取到公钥，所以只能修改明文请求包然后对其进行 rsa 加密</p>
+<p>通过查看 js 代码，前端只加密了{“username”:”admin”,”password”:”123456”}这个字符串</p>
+<p>然后修改插件配置为下面就可以直接修改明文请求包了，然后插件对其进行 rsa 加密</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114353769.png" class="">
+
+<h3 id="接口加密实现"><a href="#接口加密实现" class="headerlink" title="接口加密实现"></a>接口加密实现</h3><p>前端实现的是PKCS1_v1_5 填充方案，之前一直用PKCS1_OAEP 填充方案弄了半天</p>
+<p>代码如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding:utf-8 -*-</span><br><span class="line">from flask import Flask,request</span><br><span class="line">from Cryptodome.PublicKey import RSA</span><br><span class="line">from Cryptodome.Cipher import PKCS1_v1_5</span><br><span class="line">from base64 import b64encode</span><br><span class="line">from urllib.parse import quote</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"># 公钥 (PEM 格式)</span><br><span class="line">public_key = &quot;&quot;&quot;-----BEGIN PUBLIC KEY-----</span><br><span class="line">MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDRvA7giwinEkaTYllDYCkzujvi</span><br><span class="line">NH+up0XAKXQot8RixKGpB7nr8AdidEvuo+wVCxZwDK3hlcRGrrqt0Gxqwc11btlM</span><br><span class="line">DSj92Mr3xSaJcshZU8kfj325L8DRh9jpruphHBfh955ihvbednGAvOHOrz3Qy3Cb</span><br><span class="line">ocDbsNeCwNpRxwjIdQIDAQAB</span><br><span class="line">-----END PUBLIC KEY-----</span><br><span class="line">&quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">def rsa_encrypt(s):</span><br><span class="line">    # 加载公钥</span><br><span class="line">    public_key_obj = RSA.import_key(public_key)</span><br><span class="line"></span><br><span class="line">    # 创建加密对象，使用 PKCS1_v1_5 模式</span><br><span class="line">    cipher = PKCS1_v1_5.new(public_key_obj)</span><br><span class="line"></span><br><span class="line">    # 对明文进行加密</span><br><span class="line">    encrypted_data = cipher.encrypt(s.encode(&#x27;utf-8&#x27;))</span><br><span class="line"></span><br><span class="line">    # 将加密后的数据转为 Base64 编码</span><br><span class="line">    encrypted_base64 = b64encode(encrypted_data).decode(&#x27;utf-8&#x27;)</span><br><span class="line"></span><br><span class="line">    return encrypted_base64</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@app.route(&#x27;/encode&#x27;,methods=[&quot;POST&quot;])</span><br><span class="line">def encrypt():</span><br><span class="line">    param = request.form.get(&#x27;dataBody&#x27;)  # 获取body</span><br><span class="line">    encry_param = rsa_encrypt(param.strip(&quot;\n&quot;))</span><br><span class="line">    print(param)</span><br><span class="line">    print(encry_param)</span><br><span class="line">    return &quot;data=&quot;+quote(encry_param)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &#x27;__main__&#x27;:</span><br><span class="line">    app.debug = True # 设置调试模式，生产模式的时候要关掉debug</span><br><span class="line">    app.run(host=&quot;0.0.0.0&quot;,port=&quot;8888&quot;)</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114404809.png" class="">
+
+<h2 id="AES-Rsa-加密"><a href="#AES-Rsa-加密" class="headerlink" title="AES+Rsa 加密"></a>AES+Rsa 加密</h2><p>请求包</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114415205.png" class="">
+
+<p>搜索encryptedKey，定位到加密函数sendDataAesRsa</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114423766.png" class="">
+
+<p>可以看到随机 iv 和 key，然后将 iv 和 key 先 base64 编码然后进行 rsa 加密和 aes 加密后的明文一起发送到服务端</p>
+<p>私钥放在服务端，获取不了，这里无法对 iv 和 key 进行解密，所以就不能修改请求包，所以只能在进行加密的时候获取或者固定 iv 和 key，然后修改请求包</p>
+<h3 id="接口加密实现-1"><a href="#接口加密实现-1" class="headerlink" title="接口加密实现"></a>接口加密实现</h3><p>代码如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding:utf-8 -*-</span><br><span class="line">import json</span><br><span class="line"></span><br><span class="line">from flask import Flask,request</span><br><span class="line">from Cryptodome.PublicKey import RSA</span><br><span class="line">from Cryptodome.Cipher import PKCS1_v1_5</span><br><span class="line">from Cryptodome.Cipher import AES</span><br><span class="line">from Cryptodome.Util import Padding</span><br><span class="line">from base64 import b64encode</span><br><span class="line">import base64</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"># 公钥 (PEM 格式)</span><br><span class="line">public_key = &quot;&quot;&quot;-----BEGIN PUBLIC KEY-----</span><br><span class="line">MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDRvA7giwinEkaTYllDYCkzujvi</span><br><span class="line">NH+up0XAKXQot8RixKGpB7nr8AdidEvuo+wVCxZwDK3hlcRGrrqt0Gxqwc11btlM</span><br><span class="line">DSj92Mr3xSaJcshZU8kfj325L8DRh9jpruphHBfh955ihvbednGAvOHOrz3Qy3Cb</span><br><span class="line">ocDbsNeCwNpRxwjIdQIDAQAB</span><br><span class="line">-----END PUBLIC KEY-----</span><br><span class="line">&quot;&quot;&quot;</span><br><span class="line">secret_key = b&quot;1234567890123456&quot;</span><br><span class="line">iv = b&quot;1234567890123456&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def rsa_encrypt(s):</span><br><span class="line">    # 加载公钥</span><br><span class="line">    public_key_obj = RSA.import_key(public_key)</span><br><span class="line"></span><br><span class="line">    # 创建加密对象，使用 PKCS1_v1_5 模式</span><br><span class="line">    cipher = PKCS1_v1_5.new(public_key_obj)</span><br><span class="line"></span><br><span class="line">    # 对明文进行加密</span><br><span class="line">    encrypted_data = cipher.encrypt(s.encode(&#x27;utf-8&#x27;))</span><br><span class="line"></span><br><span class="line">    # 将加密后的数据转为 Base64 编码</span><br><span class="line">    encrypted_base64 = b64encode(encrypted_data).decode(&#x27;utf-8&#x27;)</span><br><span class="line"></span><br><span class="line">    return encrypted_base64</span><br><span class="line"></span><br><span class="line">def aes_encrypt(s):</span><br><span class="line">    k = AES.new(secret_key,AES.MODE_CBC,iv)</span><br><span class="line">    padded_s = Padding.pad(s.encode(&quot;UTF-8&quot;),AES.block_size,&quot;pkcs7&quot;)</span><br><span class="line">    en = k.encrypt(padded_s)</span><br><span class="line">    return base64.encodebytes(en).decode().strip(&quot;\n&quot;)</span><br><span class="line"></span><br><span class="line">@app.route(&#x27;/encode&#x27;,methods=[&quot;POST&quot;])</span><br><span class="line">def encrypt():</span><br><span class="line">    param = request.form.get(&#x27;dataBody&#x27;)  # 获取body</span><br><span class="line">    encry_param = aes_encrypt(param.strip(&quot;\n&quot;))</span><br><span class="line"></span><br><span class="line">    encry_key = rsa_encrypt(b64encode(secret_key).decode())</span><br><span class="line">    encry_iv = rsa_encrypt(b64encode(iv).decode())</span><br><span class="line">    print(param)</span><br><span class="line">    respose = &#123;&quot;encryptedData&quot;:encry_param,&quot;encryptedKey&quot;:encry_key,&quot;encryptedIv&quot;:encry_iv&#125;</span><br><span class="line">    print(json.dumps(respose))</span><br><span class="line">    return json.dumps(respose)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &#x27;__main__&#x27;:</span><br><span class="line">    app.debug = True # 设置调试模式，生产模式的时候要关掉debug</span><br><span class="line">    app.run(host=&quot;0.0.0.0&quot;,port=&quot;8888&quot;)</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114436246.png" class="">
+
+<h2 id="DES-加密"><a href="#DES-加密" class="headerlink" title="DES 加密"></a>DES 加密</h2><img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114442241.png" class="">
+
+<p>定位加密函数encryptAndSendDataDES</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114448438.png" class="">
+
+<p>分析发现是根据 username 动态生成 iv 和 key，chatgpt 解释如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">密钥（_0x28853a）</span><br><span class="line">从用户名的前8个字符生成（_0x54dcc5.slice(0x0, 0x8)）。</span><br><span class="line">不足8位的部分使用字符&#x27;6&#x27;填充（padEnd(0x8, &#x27;6&#x27;)）。</span><br><span class="line">经过CryptoJS.enc.Utf8.parse转为UTF-8格式。</span><br><span class="line">初始向量（IV，_0x360c3f）</span><br><span class="line">由字符串&#x27;9999&#x27;和用户名的前4个字符拼接而成。</span><br><span class="line">如果不足4位，则用字符&#x27;9&#x27;填充（padEnd(0x4, &#x27;9&#x27;)）。</span><br><span class="line">转为UTF-8格式。</span><br></pre></td></tr></table></figure>
+
+<p>然后把 password 进行 des 加密然后转为 hex</p>
+<h3 id="接口加密实现-2"><a href="#接口加密实现-2" class="headerlink" title="接口加密实现"></a>接口加密实现</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding:utf-8 -*-</span><br><span class="line">import json</span><br><span class="line">from flask import Flask,request</span><br><span class="line">from pyDes import *</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def des_encrypt(username,password):</span><br><span class="line">    key = username[:8].ljust(8,&quot;6&quot;).encode(&quot;UTF-8&quot;)</span><br><span class="line">    iv = (&quot;9999&quot;+username[:4].rjust(4,&quot;9&quot;)).encode(&quot;UTF-8&quot;)</span><br><span class="line">    k = des(key, CBC, iv, pad=None, padmode=PAD_PKCS5)</span><br><span class="line">    en = k.encrypt(password, padmode=PAD_PKCS5)</span><br><span class="line">    return en.hex()</span><br><span class="line"></span><br><span class="line">@app.route(&#x27;/encode&#x27;,methods=[&quot;POST&quot;])</span><br><span class="line">def encrypt():</span><br><span class="line">    param = request.form.get(&#x27;dataBody&#x27;)  # 获取body</span><br><span class="line">    username = json.loads(param)[&#x27;username&#x27;]</span><br><span class="line">    password = json.loads(param)[&#x27;password&#x27;]</span><br><span class="line">    encry_param = des_encrypt(username,password)</span><br><span class="line">    print(param)</span><br><span class="line">    respose = &#123;&quot;username&quot;:username,&quot;password&quot;:encry_param&#125;</span><br><span class="line">    print(json.dumps(respose))</span><br><span class="line">    return json.dumps(respose)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &#x27;__main__&#x27;:</span><br><span class="line">    app.debug = True # 设置调试模式，生产模式的时候要关掉debug</span><br><span class="line">    app.run(host=&quot;0.0.0.0&quot;,port=&quot;8888&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>这里因为不好弄插件识别关键词只实现了加密功能</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114500102.png" class="">
+
+<h2 id="明文加签"><a href="#明文加签" class="headerlink" title="明文加签"></a>明文加签</h2><p>请求包如下</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114506326.png" class="">
+
+<p>搜索 signature 定位函数sendDataWithNonce</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114512332.png" class="">
+
+<p>先生成随机数（<code>nonce</code>）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const _0x3db627 = Math.random().toString(0x24).substring(0x2);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>调用<code>Math.random()</code>生成一个随机数，返回一个介于<code>0</code>和<code>1</code>之间的小数。</li>
+<li>使用<code>toString(0x24)</code>将随机数转换为<strong>36进制</strong>字符串。</li>
+<li>调用<code>substring(0x2)</code>截取字符串，从索引<code>2</code>开始（去掉”0.”前缀）。</li>
+<li>结果保存在变量<code>_0x3db627</code>，作为<code>nonce</code>（一次性随机数）。</li>
+</ul>
+<p>生成时间戳</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const _0x1a525d = Math.floor(Date.now() / 0x3e8);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>调用<code>Date.now()</code>获取当前的时间戳（以毫秒为单位）。</li>
+<li>将时间戳除以<code>0x3e8</code>（十进制<code>1000</code>），转换为以秒为单位的时间戳。</li>
+<li>使用<code>Math.floor</code>取整，存储在<code>_0x1a525d</code>。</li>
+</ul>
+<p>计算签名</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">const _0xaf577e = _0x2547ae + _0x52eec5 + _0x3db627 + _0x1a525d;</span><br><span class="line">const _0x2ab511 = CryptoJS.HmacSHA256(_0xaf577e, &#x27;be56e057f20f883e&#x27;).toString(CryptoJS.enc.Hex);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>构造待签名字符串</strong>：</li>
+<li>将用户名、密码、随机数<code>nonce</code>、时间戳连接成一个字符串，存储在<code>_0xaf577e</code>中。</li>
+<li><strong>生成HMAC签名</strong>：</li>
+<li>使用<code>CryptoJS.HmacSHA256</code>函数对字符串<code>_0xaf577e</code>进行HMAC-SHA256哈希。</li>
+<li>使用<code>&#39;be56e057f20f883e&#39;</code>作为签名密钥。</li>
+<li>将哈希结果转换为十六进制字符串格式，存储在<code>_0x2ab511</code>。</li>
+</ul>
+<h3 id="接口加密实现-3"><a href="#接口加密实现-3" class="headerlink" title="接口加密实现"></a>接口加密实现</h3><p>这里能重放，就固定随机数，现在只需要将参数和随机数时间戳拼接起签名就行</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114539911.png" class="">
+
+<p>username+password+35i95iq19b6+timestamp</p>
+<p>代码如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding:utf-8 -*-</span><br><span class="line">import hashlib</span><br><span class="line">import hmac</span><br><span class="line">import json</span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line">from flask import Flask,request</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line">nonce = &#x27;35i95iq19b6&#x27;</span><br><span class="line">key = &#x27;be56e057f20f883e&#x27;</span><br><span class="line"></span><br><span class="line">def sha256_encrypt(username,password,timestamp):</span><br><span class="line">    key_bytes = key.encode(&#x27;utf-8&#x27;)</span><br><span class="line">    message = username + password + nonce + str(timestamp)</span><br><span class="line"></span><br><span class="line">    print(message)</span><br><span class="line">    message_bytes = message.encode(&#x27;utf-8&#x27;)</span><br><span class="line">    signature = hmac.new(key_bytes, message_bytes, hashlib.sha256).hexdigest()</span><br><span class="line">    return signature</span><br><span class="line"></span><br><span class="line">@app.route(&#x27;/encode&#x27;,methods=[&quot;POST&quot;])</span><br><span class="line">def encrypt():</span><br><span class="line">    param = request.form.get(&#x27;dataBody&#x27;)  # 获取body</span><br><span class="line">    username = json.loads(param)[&#x27;username&#x27;]</span><br><span class="line">    password = json.loads(param)[&#x27;password&#x27;]</span><br><span class="line">    timestamp = int(time.time())</span><br><span class="line">    signature_param = sha256_encrypt(username,password,timestamp)</span><br><span class="line">    print(param)</span><br><span class="line">    respose = &#123;&quot;username&quot;:username,&quot;password&quot;:password,&quot;nonce&quot;:nonce,&quot;timestamp&quot;:timestamp,&quot;signature&quot;:signature_param&#125;</span><br><span class="line">    print(json.dumps(respose))</span><br><span class="line">    return json.dumps(respose)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &#x27;__main__&#x27;:</span><br><span class="line">    app.debug = True # 设置调试模式，生产模式的时候要关掉debug</span><br><span class="line">    app.run(host=&quot;0.0.0.0&quot;,port=&quot;8888&quot;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="加签-key-在服务端"><a href="#加签-key-在服务端" class="headerlink" title="加签 key 在服务端"></a>加签 key 在服务端</h2><p>请求包如下，先获取签名</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114528610.png" class="">
+
+<p>然后再拼在一起发送到服务端，这样直接写个中转服务端就行，先获取签名然后拼在一起发送请求包</p>
+<h3 id="接口加密实现-4"><a href="#接口加密实现-4" class="headerlink" title="接口加密实现"></a>接口加密实现</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding:utf-8 -*-</span><br><span class="line">import json</span><br><span class="line">import time</span><br><span class="line">import requests</span><br><span class="line"></span><br><span class="line">from flask import Flask,request</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line">get_signature_url= &#x27;http://82.156.57.228:43899/encrypt/get-signature.php&#x27;</span><br><span class="line"></span><br><span class="line">def get_signature(username,password,timestamp):</span><br><span class="line">    data = &#123;&quot;username&quot;:username,&quot;password&quot;:password,&quot;timestamp&quot;:timestamp&#125;</span><br><span class="line">    rep = requests.post(get_signature_url,json=data)</span><br><span class="line">    signature = json.loads(rep.text)[&#x27;signature&#x27;]</span><br><span class="line">    return signature</span><br><span class="line"></span><br><span class="line">@app.route(&#x27;/encode&#x27;,methods=[&quot;POST&quot;])</span><br><span class="line">def encrypt():</span><br><span class="line">    param = request.form.get(&#x27;dataBody&#x27;)  # 获取body</span><br><span class="line">    username = json.loads(param)[&#x27;username&#x27;]</span><br><span class="line">    password = json.loads(param)[&#x27;password&#x27;]</span><br><span class="line">    timestamp = int(time.time())</span><br><span class="line">    signature_param = get_signature(username,password,timestamp)</span><br><span class="line">    print(param)</span><br><span class="line">    respose = &#123;&quot;username&quot;:username,&quot;password&quot;:password,&quot;timestamp&quot;:timestamp,&quot;signature&quot;:signature_param&#125;</span><br><span class="line">    print(json.dumps(respose))</span><br><span class="line">    return json.dumps(respose)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &#x27;__main__&#x27;:</span><br><span class="line">    app.debug = True # 设置调试模式，生产模式的时候要关掉debug</span><br><span class="line">    app.run(host=&quot;0.0.0.0&quot;,port=&quot;8888&quot;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="禁止重放"><a href="#禁止重放" class="headerlink" title="禁止重放"></a>禁止重放</h2><p>请求包如下</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114619237.png" class="">
+
+<p>再次发送，报错</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114627853.png" class="">
+
+<p>定位到sendLoginRequest 函数</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114634769.png" class="">
+
+<p>搜索generateRequestData 函数</p>
+<img src="/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/file-20241120114641010.png" class="">
+
+<p>这里就是用 rsa 加密时间戳进行防止重放攻击</p>
+<p>绕过的话就再中转服务器每次重新 rsa 加密当前时间戳就行</p>
+<h3 id="接口加密实现-5"><a href="#接口加密实现-5" class="headerlink" title="接口加密实现"></a>接口加密实现</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding:utf-8 -*-</span><br><span class="line">import json</span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line">from flask import Flask,request</span><br><span class="line">from Cryptodome.PublicKey import RSA</span><br><span class="line">from Cryptodome.Cipher import PKCS1_v1_5</span><br><span class="line">from base64 import b64encode</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"># 公钥 (PEM 格式)</span><br><span class="line">public_key = &quot;&quot;&quot;-----BEGIN PUBLIC KEY-----</span><br><span class="line">MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDRvA7giwinEkaTYllDYCkzujvi</span><br><span class="line">NH+up0XAKXQot8RixKGpB7nr8AdidEvuo+wVCxZwDK3hlcRGrrqt0Gxqwc11btlM</span><br><span class="line">DSj92Mr3xSaJcshZU8kfj325L8DRh9jpruphHBfh955ihvbednGAvOHOrz3Qy3Cb</span><br><span class="line">ocDbsNeCwNpRxwjIdQIDAQAB</span><br><span class="line">-----END PUBLIC KEY-----</span><br><span class="line">&quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">def rsa_encrypt(s):</span><br><span class="line">    # 加载公钥</span><br><span class="line">    public_key_obj = RSA.import_key(public_key)</span><br><span class="line"></span><br><span class="line">    # 创建加密对象，使用 PKCS1_v1_5 模式</span><br><span class="line">    cipher = PKCS1_v1_5.new(public_key_obj)</span><br><span class="line"></span><br><span class="line">    # 对明文进行加密</span><br><span class="line">    encrypted_data = cipher.encrypt(s.encode(&#x27;utf-8&#x27;))</span><br><span class="line"></span><br><span class="line">    # 将加密后的数据转为 Base64 编码</span><br><span class="line">    encrypted_base64 = b64encode(encrypted_data).decode(&#x27;utf-8&#x27;)</span><br><span class="line"></span><br><span class="line">    return encrypted_base64</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@app.route(&#x27;/encode&#x27;,methods=[&quot;POST&quot;])</span><br><span class="line">def encrypt():</span><br><span class="line">    param = request.form.get(&#x27;dataBody&#x27;)  # 获取body</span><br><span class="line">    username = json.loads(param)[&#x27;username&#x27;]</span><br><span class="line">    password = json.loads(param)[&#x27;password&#x27;]</span><br><span class="line">    timestamp = str(int(time.time() * 1000))</span><br><span class="line">    random = rsa_encrypt(timestamp)</span><br><span class="line">    print(param)</span><br><span class="line">    respose = &#123;&quot;username&quot;:username,&quot;password&quot;:password,&quot;random&quot;:random&#125;</span><br><span class="line">    print(json.dumps(respose))</span><br><span class="line">    return json.dumps(respose)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &#x27;__main__&#x27;:</span><br><span class="line">    app.debug = True # 设置调试模式，生产模式的时候要关掉debug</span><br><span class="line">    app.run(host=&quot;0.0.0.0&quot;,port=&quot;8888&quot;)</span><br></pre></td></tr></table></figure>
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#AES-%E5%9B%BA%E5%AE%9A-key"><span class="toc-number">1.</span> <span class="toc-text">AES 固定 key</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E8%B0%83%E7%94%A8-rpc-%E6%B5%8F%E8%A7%88%E5%99%A8%E6%96%B9%E6%B3%95"><span class="toc-number">1.1.</span> <span class="toc-text">远程调用(rpc)浏览器方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Burp%E6%8F%92%E4%BB%B6"><span class="toc-number">1.2.</span> <span class="toc-text">Burp插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E5%8A%A0%E8%A7%A3%E5%AF%86%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.3.</span> <span class="toc-text">接口加解密代码实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AES%E6%9C%8D%E5%8A%A1%E7%AB%AF%E8%8E%B7%E5%8F%96Key"><span class="toc-number">2.</span> <span class="toc-text">AES服务端获取Key</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E5%8A%A0%E8%A7%A3%E5%AF%86%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.1.</span> <span class="toc-text">接口加解密实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RSA-%E5%8A%A0%E5%AF%86"><span class="toc-number">3.</span> <span class="toc-text">RSA 加密</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E5%8A%A0%E5%AF%86%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.1.</span> <span class="toc-text">接口加密实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AES-Rsa-%E5%8A%A0%E5%AF%86"><span class="toc-number">4.</span> <span class="toc-text">AES+Rsa 加密</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E5%8A%A0%E5%AF%86%E5%AE%9E%E7%8E%B0-1"><span class="toc-number">4.1.</span> <span class="toc-text">接口加密实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DES-%E5%8A%A0%E5%AF%86"><span class="toc-number">5.</span> <span class="toc-text">DES 加密</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E5%8A%A0%E5%AF%86%E5%AE%9E%E7%8E%B0-2"><span class="toc-number">5.1.</span> <span class="toc-text">接口加密实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%98%8E%E6%96%87%E5%8A%A0%E7%AD%BE"><span class="toc-number">6.</span> <span class="toc-text">明文加签</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E5%8A%A0%E5%AF%86%E5%AE%9E%E7%8E%B0-3"><span class="toc-number">6.1.</span> <span class="toc-text">接口加密实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A0%E7%AD%BE-key-%E5%9C%A8%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="toc-number">7.</span> <span class="toc-text">加签 key 在服务端</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E5%8A%A0%E5%AF%86%E5%AE%9E%E7%8E%B0-4"><span class="toc-number">7.1.</span> <span class="toc-text">接口加密实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A6%81%E6%AD%A2%E9%87%8D%E6%94%BE"><span class="toc-number">8.</span> <span class="toc-text">禁止重放</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E5%8A%A0%E5%AF%86%E5%AE%9E%E7%8E%B0-5"><span class="toc-number">8.1.</span> <span class="toc-text">接口加密实现</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/&text=前端加解密靶场练习"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/&title=前端加解密靶场练习"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/&is_video=false&description=前端加解密靶场练习"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=前端加解密靶场练习&body=Check out this article: http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/&title=前端加解密靶场练习"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/&title=前端加解密靶场练习"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/&title=前端加解密靶场练习"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/&title=前端加解密靶场练习"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/&name=前端加解密靶场练习&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2024/11/20/%E5%89%8D%E7%AB%AF%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0/&t=前端加解密靶场练习"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    N0poInt
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
